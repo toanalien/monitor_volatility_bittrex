@@ -31,6 +31,7 @@ text-error = (err) ->
   else err
 
 raschet = (a, b) -> Math.abs((b - a) / a * 100)
+raschet-change = (a, b) -> (b - a) / a * 100
 
 percentage-between-numbers = (a, b) -> +(100 * (a - b) / b).toFixed 1
 
@@ -103,6 +104,7 @@ load-data-pair = (list_pair, cbk) ->
       sell: obj.result[key].Ask
       volume: +obj.result[key].Volume.toFixed(2)
       quoteVolume: +obj.result[key].BaseVolume.toFixed(2)
+      change: raschet-change(obj.result[key].PrevDay, obj.result[key].Last).toFixed(2)
   cbk null, pair_max_pr: pair_max_pr
 
 reg = (method, cbk) ->
@@ -114,7 +116,7 @@ reg = (method, cbk) ->
 
 html-data = (data, cbk) ->
   css = do
-    div: "margin-bottom: 10px; border-bottom: 1px solid black; width: 1200px;"
+    div: "margin-bottom: 10px; border-bottom: 1px solid black; width: 1350px;"
     span: "width: 150px; display: inline-block;"
     donate: "margin-left: 1000px; margin-top: 24px;"
   end-time = Math.ceil((CACHE.date + ms("#{time_cache}m") - lodash.now!) / (1000 * 60))
@@ -125,6 +127,7 @@ html-data = (data, cbk) ->
     "<div style='#{css.div}'>
     <span style='#{css.span}'>Пара</span>
     <span style='#{css.span}'>% волотильности</span>
+    <span style='#{css.span}'>% change</span>
     <span style='#{css.span}'>Ask</span>
     <span style='#{css.span}'>Bid</span>
     <span style='#{css.span}'>Стенка на Ask</span>
@@ -137,6 +140,7 @@ html-data = (data, cbk) ->
     html.push "<div>
       <span style='#{css.span}'>#{v[0].replace('-', '/')}</span>
       <span style='#{css.span}'>#{v[1]}</span>
+      <span style='#{css.span}'>#{v[8]}</span>
       <span style='#{css.span}'>#{v[2]}</span>
       <span style='#{css.span}'>#{v[3]}</span>
       <span style='#{css.span}'>#{v[4]}</span>
@@ -183,6 +187,7 @@ main = (res) ->
                     WALL_DATA[key].bid,
                     data.pair_max_pr[key].quoteVolume
                     data.pair_max_pr[key].volume,
+                    data.pair_max_pr[key].change,
                   ]
                 )
             sorted = sortable.sort((a,b) -> b[1] - a[1])
