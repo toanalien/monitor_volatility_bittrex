@@ -172,18 +172,19 @@ main = (res) ->
           else
             sortable = []
             Object.keys(data.pair_max_pr).forEach (key) !->
-              sortable.push(
-                [
-                  key,
-                  data.pair_max_pr[key].max_pr,
-                  data.pair_max_pr[key].buy,
-                  data.pair_max_pr[key].sell,
-                  WALL_DATA[key].ask,
-                  WALL_DATA[key].bid,
-                  data.pair_max_pr[key].quoteVolume
-                  data.pair_max_pr[key].volume,
-                ]
-              )
+              if key in LIST_PAIR
+                sortable.push(
+                  [
+                    key,
+                    data.pair_max_pr[key].max_pr,
+                    data.pair_max_pr[key].buy,
+                    data.pair_max_pr[key].sell,
+                    WALL_DATA[key].ask,
+                    WALL_DATA[key].bid,
+                    data.pair_max_pr[key].quoteVolume
+                    data.pair_max_pr[key].volume,
+                  ]
+                )
             sorted = sortable.sort((a,b) -> b[1] - a[1])
             console.log "Cache updated successfully"
             CACHE := do

@@ -217,7 +217,9 @@
             } else {
               sortable = [];
               Object.keys(data.pair_max_pr).forEach(function(key){
-                sortable.push([key, data.pair_max_pr[key].max_pr, data.pair_max_pr[key].buy, data.pair_max_pr[key].sell, WALL_DATA[key].ask, WALL_DATA[key].bid, data.pair_max_pr[key].quoteVolume, data.pair_max_pr[key].volume]);
+                if (in$(key, LIST_PAIR)) {
+                  sortable.push([key, data.pair_max_pr[key].max_pr, data.pair_max_pr[key].buy, data.pair_max_pr[key].sell, WALL_DATA[key].ask, WALL_DATA[key].bid, data.pair_max_pr[key].quoteVolume, data.pair_max_pr[key].volume]);
+                }
               });
               sorted = sortable.sort(function(a, b){
                 return b[1] - a[1];
@@ -257,4 +259,9 @@
   app.listen(server_port, function(){
     return console.log("App listening on port " + server_port + "!");
   });
+  function in$(x, xs){
+    var i = -1, l = xs.length >>> 0;
+    while (++i < l) if (x === xs[i]) return true;
+    return false;
+  }
 }).call(this);
