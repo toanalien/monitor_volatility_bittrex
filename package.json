@@ -1,0 +1,38 @@
+{
+  "name": "monitor_volatility_bittrex",
+  "version": "0.1.0",
+  "author": {
+    "name": "George",
+    "email": "steeply2010@gmail.com"
+  },
+  "description": "monitor btc-e application",
+  "main": "./build/app.js",
+  "scripts": {
+    "start": "node ./build/app"
+  },
+  "contributors": [
+    {
+      "name": "George",
+      "email": "steeply2010@gmail.com"
+    }
+  ],
+  "keywords": [
+    "bittrex",
+    "monitor",
+    "volatility",
+    "coin"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=8.1.2",
+    "npm": ">=5.0.3"
+  },
+  "private": true,
+  "dependencies": {
+    "async": "^2.4.1",
+    "express": "^4.15.3",
+    "lodash": "^4.17.4",
+    "ms": "^2.0.0",
+    "request": "^2.81.0"
+  }
+}
