@@ -105,8 +105,8 @@
         return percentageBetweenNumbers(v.Quantity, ask_avg) > avg_percent;
       });
       WALL_DATA[pair] = {
-        bid: objBuy[bid_index].Rate,
-        ask: objSell[ask_index].Rate
+        bid: bid_index >= 0 ? objBuy[bid_index].Rate : 'Не найдено',
+        ask: ask_index >= 0 ? objSell[ask_index].Rate : 'Не найдено'
       };
       return cbk(null);
     });
@@ -172,21 +172,32 @@
     });
   };
   htmlData = function(data, cbk){
-    var css, endTime, html;
+    var css, endTime, bittrex, btcE, poloniex, html;
     css = {
       div: "margin-bottom: 10px; border-bottom: 1px solid black; width: 1350px;",
       span: "width: 150px; display: inline-block;",
+      green: "color: green",
+      red: "color: red",
       donate: "margin-left: 1000px; margin-top: 24px;"
     };
     endTime = Math.ceil((CACHE.date + ms(time_cache + "m") - lodash.now()) / (1000 * 60));
+    bittrex = "<a href=https://monitor-volatility-bittrex.herokuapp.com>Bittrex</a>";
+    btcE = "<a href=https://monitor-volatility-btc-e.herokuapp.com>Btc-e</a>";
+    poloniex = "<a href=https://monitor-volatility-poloniex.herokuapp.com>Poloniex</a>";
     html = [
-      "<html><head><title>Анализ волатильности торговых пар биржи Bittrex</title></head><body>", "<h2>Анализ волатильности торговых пар биржи Bittrex</h2>", "<h3>Время: " + new Date(CACHE.date).toLocaleTimeString('en-US', {
+      "<html><head><title>Анализ волатильности торговых пар биржи Bittrex</title></head><body>", "<h2>Анализ волатильности торговых пар биржи " + bittrex + " (" + btcE + " | " + poloniex + ")</h2>", "<h3>Период: 24 ч. &nbsp;&nbsp; Время: " + new Date(CACHE.date).toLocaleTimeString('en-US', {
         timeZone: 'Europe/Moscow',
         hour12: false
       }) + " &nbsp;&nbsp;&nbsp; Обновление кэша через: " + endTime + " мин. </h3>", "<div style='" + css.div + "'><span style='" + css.span + "'>Пара</span><span style='" + css.span + "'>% волотильности</span><span style='" + css.span + "'>% change</span><span style='" + css.span + "'>Ask</span><span style='" + css.span + "'>Bid</span><span style='" + css.span + "'>Стенка на Ask</span><span style='" + css.span + "'>Стенка на Bid</span><span style='" + css.span + "'>Volume</span><span style='" + css.span + "'>Volume Fork</span></div>"
     ];
     data.forEach(function(v){
-      html.push("<div><span style='" + css.span + "'>" + v[0].replace('-', '/') + "</span><span style='" + css.span + "'>" + v[1] + "</span><span style='" + css.span + "'>" + v[8] + "</span><span style='" + css.span + "'>" + v[2] + "</span><span style='" + css.span + "'>" + v[3] + "</span><span style='" + css.span + "'>" + v[4] + "</span><span style='" + css.span + "'>" + v[5] + "</span><span style='" + css.span + "'>" + v[6] + "</span><span style='" + css.span + "'>" + v[7] + "</span></div>");
+      var color;
+      color = v[8] > 0
+        ? css.green
+        : css.red;
+      if (!lodash.isNaN(+v[1])) {
+        html.push("<div><span style='" + css.span + "'>" + v[0].replace('-', '/') + "</span><span style='" + css.span + "'>" + v[1] + "</span><span style='" + css.span + " " + color + "'>" + v[8] + "</span><span style='" + css.span + "'>" + v[2] + "</span><span style='" + css.span + "'>" + v[3] + "</span><span style='" + css.span + "'>" + v[4] + "</span><span style='" + css.span + "'>" + v[5] + "</span><span style='" + css.span + "'>" + v[6] + "</span><span style='" + css.span + "'>" + v[7] + "</span></div>");
+      }
     });
     html.push("<div style='" + css.donate + "'>BTC: 1GGbq5xkk9YUUy4QTqsUhNnc9T1n3sQ9Fo</div>");
     html.push("</body></html>");

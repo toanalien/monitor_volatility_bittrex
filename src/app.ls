@@ -74,8 +74,8 @@ order-book-pair = (pair, cbk) ->
     percentage-between-numbers(v.Quantity, ask_avg) > avg_percent
   )
   WALL_DATA[pair] := do
-    bid: obj-buy[bid_index].Rate
-    ask: obj-sell[ask_index].Rate
+    bid: if bid_index >= 0 then obj-buy[bid_index].Rate else 'Не найдено'
+    ask: if ask_index >= 0 then obj-sell[ask_index].Rate else 'Не найдено'
   cbk null
 
 currency-pair-list = (cbk) ->
@@ -118,12 +118,19 @@ html-data = (data, cbk) ->
   css = do
     div: "margin-bottom: 10px; border-bottom: 1px solid black; width: 1350px;"
     span: "width: 150px; display: inline-block;"
+    green: "color: green"
+    red: "color: red"
     donate: "margin-left: 1000px; margin-top: 24px;"
   end-time = Math.ceil((CACHE.date + ms("#{time_cache}m") - lodash.now!) / (1000 * 60))
+
+  bittrex = "<a href=https://monitor-volatility-bittrex.herokuapp.com>Bittrex</a>"
+  btc-e = "<a href=https://monitor-volatility-btc-e.herokuapp.com>Btc-e</a>"
+  poloniex = "<a href=https://monitor-volatility-poloniex.herokuapp.com>Poloniex</a>"
+
   html = [
     "<html><head><title>Анализ волатильности торговых пар биржи Bittrex</title></head><body>"
-    "<h2>Анализ волатильности торговых пар биржи Bittrex</h2>"
-    "<h3>Время: #{new Date(CACHE.date).toLocaleTimeString('en-US', { timeZone: 'Europe/Moscow', hour12: false })} &nbsp;&nbsp;&nbsp; Обновление кэша через: #{end-time} мин. </h3>"
+    "<h2>Анализ волатильности торговых пар биржи #{bittrex} (#{btc-e} | #{poloniex})</h2>"
+    "<h3>Период: 24 ч. &nbsp;&nbsp; Время: #{new Date(CACHE.date).toLocaleTimeString('en-US', { timeZone: 'Europe/Moscow', hour12: false })} &nbsp;&nbsp;&nbsp; Обновление кэша через: #{end-time} мин. </h3>"
     "<div style='#{css.div}'>
     <span style='#{css.span}'>Пара</span>
     <span style='#{css.span}'>% волотильности</span>
@@ -137,17 +144,19 @@ html-data = (data, cbk) ->
     </div>"
   ]
   data.forEach (v) !->
-    html.push "<div>
-      <span style='#{css.span}'>#{v[0].replace('-', '/')}</span>
-      <span style='#{css.span}'>#{v[1]}</span>
-      <span style='#{css.span}'>#{v[8]}</span>
-      <span style='#{css.span}'>#{v[2]}</span>
-      <span style='#{css.span}'>#{v[3]}</span>
-      <span style='#{css.span}'>#{v[4]}</span>
-      <span style='#{css.span}'>#{v[5]}</span>
-      <span style='#{css.span}'>#{v[6]}</span>
-      <span style='#{css.span}'>#{v[7]}</span>
-      </div>"
+    color = if v[8] > 0 then css.green else css.red
+    if !lodash.isNaN +v[1]
+      html.push "<div>
+        <span style='#{css.span}'>#{v[0].replace('-', '/')}</span>
+        <span style='#{css.span}'>#{v[1]}</span>
+        <span style='#{css.span} #{color}'>#{v[8]}</span>
+        <span style='#{css.span}'>#{v[2]}</span>
+        <span style='#{css.span}'>#{v[3]}</span>
+        <span style='#{css.span}'>#{v[4]}</span>
+        <span style='#{css.span}'>#{v[5]}</span>
+        <span style='#{css.span}'>#{v[6]}</span>
+        <span style='#{css.span}'>#{v[7]}</span>
+        </div>"
   html.push "<div style='#{css.donate}'>BTC: 1GGbq5xkk9YUUy4QTqsUhNnc9T1n3sQ9Fo</div>"
   html.push "</body></html>"
   cbk html.join(" ")
