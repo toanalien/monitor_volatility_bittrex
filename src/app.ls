@@ -7,6 +7,7 @@ require! {
 }
 
 app = express!
+app.use('/public', express.static('public'))
 
 server_port = process.env.PORT || 3000
 time_cache = process.env.TIME_CACHE || 10   # в минутах
@@ -30,9 +31,7 @@ text-error = (err) ->
     else objToString err
   else err
 
-raschet = (a, b) -> Math.abs((b - a) / a * 100)
-raschet-change = (a, b) -> (b - a) / a * 100
-
+difference-between-numbers = (a, b) -> (b - a) / a * 100
 percentage-between-numbers = (a, b) -> +(100 * (a - b) / b).toFixed 1
 
 order-book = (list_pair, cbk) ->
@@ -99,12 +98,12 @@ load-data-pair = (list_pair, cbk) ->
   pair_max_pr = {}
   Object.keys(obj.result).forEach (key) !->
     pair_max_pr[obj.result[key].MarketName] := do
-      max_pr: raschet(obj.result[key].High, obj.result[key].Low).toFixed(2)
+      max_pr: (Math.abs(difference-between-numbers(obj.result[key].High, obj.result[key].Low))).toFixed(2)
       buy: obj.result[key].Bid
       sell: obj.result[key].Ask
-      volume: +obj.result[key].Volume.toFixed(2)
-      quoteVolume: +obj.result[key].BaseVolume.toFixed(2)
-      change: raschet-change(obj.result[key].PrevDay, obj.result[key].Last).toFixed(2)
+      volume: +obj.result[key].Volume?.toFixed(2)
+      quoteVolume: +obj.result[key].BaseVolume?.toFixed(2)
+      change: difference-between-numbers(obj.result[key].PrevDay, obj.result[key].Last).toFixed(2)
   cbk null, pair_max_pr: pair_max_pr
 
 reg = (method, cbk) ->
@@ -116,8 +115,6 @@ reg = (method, cbk) ->
 
 html-data = (data, cbk) ->
   css = do
-    div: "margin-bottom: 10px; border-bottom: 1px solid black; width: 1350px;"
-    span: "width: 150px; display: inline-block;"
     green: "color: green"
     red: "color: red"
     donate: "margin-left: 1000px; margin-top: 24px;"
@@ -128,36 +125,47 @@ html-data = (data, cbk) ->
   poloniex = "<a href=https://monitor-volatility-poloniex.herokuapp.com>Poloniex</a>"
 
   html = [
-    "<html><head><title>Анализ волатильности торговых пар биржи Bittrex</title></head><body>"
+    "<html><head>
+    <title>Анализ волатильности торговых пар биржи Bittrex</title>
+    <script type='text/javascript' src='/public/jquery.min.js'></script>
+    <script type='text/javascript' src='/public/jquery.tablesorter.js'></script>
+    <link rel='stylesheet' href='/public/style.css' type='text/css'>
+    <style type='text/css'>.tablesorter { font-size: 10pt !important; width: 1350px !important; }</style>
+    <script type='text/javascript'>
+      $(document).ready(function() {
+        $('table').tablesorter();
+      });
+    </script>
+    </head><body>"
     "<h2>Анализ волатильности торговых пар биржи #{bittrex} (#{btc-e} | #{poloniex})</h2>"
     "<h3>Период: 24 ч. &nbsp;&nbsp; Время: #{new Date(CACHE.date).toLocaleTimeString('en-US', { timeZone: 'Europe/Moscow', hour12: false })} &nbsp;&nbsp;&nbsp; Обновление кэша через: #{end-time} мин. </h3>"
-    "<div style='#{css.div}'>
-    <span style='#{css.span}'>Пара</span>
-    <span style='#{css.span}'>% волотильности</span>
-    <span style='#{css.span}'>% change</span>
-    <span style='#{css.span}'>Ask</span>
-    <span style='#{css.span}'>Bid</span>
-    <span style='#{css.span}'>Стенка на Ask</span>
-    <span style='#{css.span}'>Стенка на Bid</span>
-    <span style='#{css.span}'>Volume</span>
-    <span style='#{css.span}'>Volume Fork</span>
-    </div>"
+    "<table class='tablesorter'><thead><tr>
+    <th>Пара</th>
+    <th>% волотильности</th>
+    <th>% change</th>
+    <th>Ask</th>
+    <th>Bid</th>
+    <th>Стенка на Ask</th>
+    <th>Стенка на Bid</th>
+    <th>Volume</th>
+    <th>Volume Fork</th>
+    </tr></thead><tbody>"
   ]
   data.forEach (v) !->
     color = if v[8] > 0 then css.green else css.red
     if !lodash.isNaN +v[1]
-      html.push "<div>
-        <span style='#{css.span}'>#{v[0].replace('-', '/')}</span>
-        <span style='#{css.span}'>#{v[1]}</span>
-        <span style='#{css.span} #{color}'>#{v[8]}</span>
-        <span style='#{css.span}'>#{v[2]}</span>
-        <span style='#{css.span}'>#{v[3]}</span>
-        <span style='#{css.span}'>#{v[4]}</span>
-        <span style='#{css.span}'>#{v[5]}</span>
-        <span style='#{css.span}'>#{v[6]}</span>
-        <span style='#{css.span}'>#{v[7]}</span>
-        </div>"
-  html.push "<div style='#{css.donate}'>BTC: 1GGbq5xkk9YUUy4QTqsUhNnc9T1n3sQ9Fo</div>"
+      html.push "<tr>
+        <td>#{v[0].replace('-', '/')}</td>
+        <td>#{v[1]}</td>
+        <td style='#{color}'>#{v[8]}</td>
+        <td>#{v[2]}</td>
+        <td>#{v[3]}</td>
+        <td>#{v[4]}</td>
+        <td>#{v[5]}</td>
+        <td>#{v[6]}</td>
+        <td>#{v[7]}</td>
+        </tr>"
+  html.push "</tbody></table><div style='#{css.donate}'>BTC: 1GGbq5xkk9YUUy4QTqsUhNnc9T1n3sQ9Fo</div>"
   html.push "</body></html>"
   cbk html.join(" ")
 
