@@ -134,11 +134,15 @@ html-data = (data, cbk) ->
     <title>Анализ волатильности торговых пар биржи Bittrex</title>
     <script type='text/javascript' src='/public/jquery.min.js'></script>
     <script type='text/javascript' src='/public/jquery.tablesorter.js'></script>
+    <script type='text/javascript' src='/public/jquery.filtertable.min.js'></script>
     <link rel='stylesheet' href='/public/style.css' type='text/css'>
-    <style type='text/css'>.tablesorter { font-size: 10pt !important; width: 1350px !important; }</style>
     <script type='text/javascript'>
       $(document).ready(function() {
         $('table').tablesorter();
+        $('table').filterTable({
+          label: 'Фильтр: ',
+          placeholder: ''
+        });
       });
     </script>
     #{metrika}

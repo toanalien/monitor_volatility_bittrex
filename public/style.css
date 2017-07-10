@@ -37,3 +37,7 @@ table.tablesorter thead tr .headerSortDown {
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
 background-color: #8dbdd8;
 }
+
+.tablesorter { font-size: 10pt !important; width: 1350px !important; }
+input[type='search'] { border-width: 1px !important; }
+input[type='search']:focus { outline: none !important; }
