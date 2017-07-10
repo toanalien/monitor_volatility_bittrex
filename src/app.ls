@@ -12,6 +12,7 @@ app.use('/public', express.static('public'))
 server_port = process.env.PORT || 3000
 time_cache = process.env.TIME_CACHE || 10   # в минутах
 limit-order-book = process.env.LIMIT_ORDER_BOOK || 100  # глубина стакана
+ya-id = process.env.YA_ID
 
 CACHE = date: 0, data: []
 WALL_DATA   = {}
@@ -124,6 +125,10 @@ html-data = (data, cbk) ->
   btc-e = "<a href=https://monitor-volatility-btc-e.herokuapp.com>Btc-e</a>"
   poloniex = "<a href=https://monitor-volatility-poloniex.herokuapp.com>Poloniex</a>"
 
+  if !!ya-id
+    metrika = "<!-- Yandex.Metrika counter --> <script type='text/javascript'> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter#{ya-id} = new Ya.Metrika({ id:#{ya-id}, clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true, ut:'noindex' }); } catch(e) { } }); var n = d.getElementsByTagName('script')[0], s = d.createElement('script'), f = function () { n.parentNode.insertBefore(s, n); }; s.type = 'text/javascript'; s.async = true; s.src = 'https://mc.yandex.ru/metrika/watch.js'; if (w.opera == '[object Opera]') { d.addEventListener('DOMContentLoaded', f, false); } else { f(); } })(document, window, 'yandex_metrika_callbacks'); </script> <noscript><div><img src='https://mc.yandex.ru/watch/#{ya-id}?ut=noindex' style='position:absolute; left:-9999px;' alt='' /></div></noscript> <!-- /Yandex.Metrika counter -->"
+  else
+    metrika = ''
   html = [
     "<html><head>
     <title>Анализ волатильности торговых пар биржи Bittrex</title>
@@ -136,6 +141,7 @@ html-data = (data, cbk) ->
         $('table').tablesorter();
       });
     </script>
+    #{metrika}
     </head><body>"
     "<h2>Анализ волатильности торговых пар биржи #{bittrex} (#{btc-e} | #{poloniex})</h2>"
     "<h3>Период: 24 ч. &nbsp;&nbsp; Время: #{new Date(CACHE.date).toLocaleTimeString('en-US', { timeZone: 'Europe/Moscow', hour12: false })} &nbsp;&nbsp;&nbsp; Обновление кэша через: #{end-time} мин. </h3>"
