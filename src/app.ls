@@ -118,17 +118,18 @@ html-data = (data, cbk) ->
   css = do
     green: "color: green"
     red: "color: red"
-    donate: "margin-left: 1000px; margin-top: 24px;"
-  end-time = Math.ceil((CACHE.date + ms("#{time_cache}m") - lodash.now!) / (1000 * 60))
 
   bittrex = "<a href=https://monitor-volatility-bittrex.herokuapp.com>Bittrex</a>"
   btc-e = "<a href=https://monitor-volatility-btc-e.herokuapp.com>Btc-e</a>"
   poloniex = "<a href=https://monitor-volatility-poloniex.herokuapp.com>Poloniex</a>"
 
+  end-time = Math.ceil((CACHE.date + ms("#{time_cache}m") - lodash.now!) / (1000 * 60))
+
   if !!ya-id
     metrika = "<!-- Yandex.Metrika counter --> <script type='text/javascript'> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter#{ya-id} = new Ya.Metrika({ id:#{ya-id}, clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true, ut:'noindex' }); } catch(e) { } }); var n = d.getElementsByTagName('script')[0], s = d.createElement('script'), f = function () { n.parentNode.insertBefore(s, n); }; s.type = 'text/javascript'; s.async = true; s.src = 'https://mc.yandex.ru/metrika/watch.js'; if (w.opera == '[object Opera]') { d.addEventListener('DOMContentLoaded', f, false); } else { f(); } })(document, window, 'yandex_metrika_callbacks'); </script> <noscript><div><img src='https://mc.yandex.ru/watch/#{ya-id}?ut=noindex' style='position:absolute; left:-9999px;' alt='' /></div></noscript> <!-- /Yandex.Metrika counter -->"
   else
     metrika = ''
+
   html = [
     "<html><head>
     <title>Анализ волатильности торговых пар биржи Bittrex</title>
@@ -175,7 +176,7 @@ html-data = (data, cbk) ->
         <td>#{v[6]}</td>
         <td>#{v[7]}</td>
         </tr>"
-  html.push "</tbody></table><div style='#{css.donate}'>BTC: 1GGbq5xkk9YUUy4QTqsUhNnc9T1n3sQ9Fo</div>"
+  html.push "</tbody></table><div class='donate'>BTC: 1GGbq5xkk9YUUy4QTqsUhNnc9T1n3sQ9Fo</div>"
   html.push "</body></html>"
   cbk html.join(" ")
 

@@ -172,16 +172,15 @@
     });
   };
   htmlData = function(data, cbk){
-    var css, endTime, bittrex, btcE, poloniex, metrika, html;
+    var css, bittrex, btcE, poloniex, endTime, metrika, html;
     css = {
       green: "color: green",
-      red: "color: red",
-      donate: "margin-left: 1000px; margin-top: 24px;"
+      red: "color: red"
     };
-    endTime = Math.ceil((CACHE.date + ms(time_cache + "m") - lodash.now()) / (1000 * 60));
     bittrex = "<a href=https://monitor-volatility-bittrex.herokuapp.com>Bittrex</a>";
     btcE = "<a href=https://monitor-volatility-btc-e.herokuapp.com>Btc-e</a>";
     poloniex = "<a href=https://monitor-volatility-poloniex.herokuapp.com>Poloniex</a>";
+    endTime = Math.ceil((CACHE.date + ms(time_cache + "m") - lodash.now()) / (1000 * 60));
     if (!!yaId) {
       metrika = "<!-- Yandex.Metrika counter --> <script type='text/javascript'> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter" + yaId + " = new Ya.Metrika({ id:" + yaId + ", clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true, ut:'noindex' }); } catch(e) { } }); var n = d.getElementsByTagName('script')[0], s = d.createElement('script'), f = function () { n.parentNode.insertBefore(s, n); }; s.type = 'text/javascript'; s.async = true; s.src = 'https://mc.yandex.ru/metrika/watch.js'; if (w.opera == '[object Opera]') { d.addEventListener('DOMContentLoaded', f, false); } else { f(); } })(document, window, 'yandex_metrika_callbacks'); </script> <noscript><div><img src='https://mc.yandex.ru/watch/" + yaId + "?ut=noindex' style='position:absolute; left:-9999px;' alt='' /></div></noscript> <!-- /Yandex.Metrika counter -->";
     } else {
@@ -202,7 +201,7 @@
         html.push("<tr><td>" + v[0].replace('-', '/') + "</td><td>" + v[1] + "</td><td style='" + color + "'>" + v[8] + "</td><td>" + v[2] + "</td><td>" + v[3] + "</td><td>" + v[4] + "</td><td>" + v[5] + "</td><td>" + v[6] + "</td><td>" + v[7] + "</td></tr>");
       }
     });
-    html.push("</tbody></table><div style='" + css.donate + "'>BTC: 1GGbq5xkk9YUUy4QTqsUhNnc9T1n3sQ9Fo</div>");
+    html.push("</tbody></table><div class='donate'>BTC: 1GGbq5xkk9YUUy4QTqsUhNnc9T1n3sQ9Fo</div>");
     html.push("</body></html>");
     return cbk(html.join(" "));
   };
