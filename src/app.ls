@@ -1,12 +1,17 @@
 require! {
+  \path
   \async
   \lodash
   \request
   \express
+  \compression
   \ms
+  \serve-favicon :favicon
 }
 
 app = express!
+app.use(compression!)
+app.use(favicon(path.join(__dirname, 'favicon.png')))
 app.use('/public', express.static('public'))
 
 server_port = process.env.PORT || 3000
@@ -34,6 +39,7 @@ text-error = (err) ->
 
 difference-between-numbers = (a, b) -> (b - a) / a * 100
 percentage-between-numbers = (a, b) -> +(100 * (a - b) / b).toFixed 1
+flat_func                  = (x, y, z) -> (z - x) / (y - x) * 100
 
 order-book = (list_pair, cbk) ->
   with []
@@ -105,6 +111,7 @@ load-data-pair = (list_pair, cbk) ->
       volume: +obj.result[key].Volume?.toFixed(2)
       quoteVolume: +obj.result[key].BaseVolume?.toFixed(2)
       change: difference-between-numbers(obj.result[key].PrevDay, obj.result[key].Last).toFixed(2)
+      flat_24n: flat_func(obj.result[key].Low, obj.result[key].High, obj.result[key].Last).toFixed!
   cbk null, pair_max_pr: pair_max_pr
 
 reg = (method, cbk) ->
@@ -152,8 +159,9 @@ html-data = (data, cbk) ->
     "<h3>Период: 24 ч. &nbsp;&nbsp; Время: #{new Date(CACHE.date).toLocaleTimeString('en-US', { timeZone: 'Europe/Moscow', hour12: false })} &nbsp;&nbsp;&nbsp; Обновление кэша через: #{end-time} мин. </h3>"
     "<table class='tablesorter'><thead><tr>
     <th>Пара</th>
-    <th>% волотильности</th>
-    <th>% change</th>
+    <th>диапазон хода %</th>
+    <th>уровень lastPrice % в<br>диапазоне хода</th>
+    <th>change %</th>
     <th>Ask</th>
     <th>Bid</th>
     <th>Стенка на Ask</th>
@@ -168,6 +176,7 @@ html-data = (data, cbk) ->
       html.push "<tr>
         <td>#{v[0].replace('-', '/')}</td>
         <td>#{v[1]}</td>
+        <td>#{v[9]}</td>
         <td style='#{color}'>#{v[8]}</td>
         <td>#{v[2]}</td>
         <td>#{v[3]}</td>
@@ -176,7 +185,7 @@ html-data = (data, cbk) ->
         <td>#{v[6]}</td>
         <td>#{v[7]}</td>
         </tr>"
-  html.push "</tbody></table><div class='donate'>BTC: 1GGbq5xkk9YUUy4QTqsUhNnc9T1n3sQ9Fo</div>"
+  html.push "</tbody></table><div class='donate'></div>"
   html.push "</body></html>"
   cbk html.join(" ")
 
@@ -216,6 +225,7 @@ main = (res) ->
                     data.pair_max_pr[key].quoteVolume
                     data.pair_max_pr[key].volume,
                     data.pair_max_pr[key].change,
+                    data.pair_max_pr[key].flat_24n,
                   ]
                 )
             sorted = sortable.sort((a,b) -> b[1] - a[1])
