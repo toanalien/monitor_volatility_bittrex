@@ -200,14 +200,14 @@ main = (res) ->
     ], (err) !->
         if err?
           loading := false
-          text = "Error!"
+          text = "Exchange not available! Message: #{err}"
           res.send text
           console.error "\nError: ", text-error err
         else
           err, data <-! load-data-pair LIST_PAIR
           if err?
             loading := false
-            text = "Error!"
+            text = "Exchange not available! Message: #{err}"
             res.send text
             console.error "\nError: ", text-error err
           else

@@ -229,7 +229,7 @@
         var text;
         if (err != null) {
           loading = false;
-          text = "Error!";
+          text = "Exchange not available! Message: " + err;
           res.send(text);
           console.error("\nError: ", textError(err));
         } else {
@@ -237,7 +237,7 @@
             var text, sortable, sorted;
             if (err != null) {
               loading = false;
-              text = "Error!";
+              text = "Exchange not available! Message: " + err;
               res.send(text);
               console.error("\nError: ", textError(err));
             } else {
