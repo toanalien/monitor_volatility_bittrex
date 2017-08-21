@@ -181,7 +181,7 @@
     });
   };
   htmlData = function(data, cbk){
-    var css, bittrex, btcE, poloniex, endTime, metrika, html;
+    var css, bittrex, btcE, poloniex, exmo, endTime, metrika, html;
     css = {
       green: "color: green",
       red: "color: red"
@@ -189,6 +189,7 @@
     bittrex = "<a href=https://monitor-volatility-bittrex.herokuapp.com>Bittrex</a>";
     btcE = "<a href=https://monitor-volatility-btc-e.herokuapp.com>Btc-e</a>";
     poloniex = "<a href=https://monitor-volatility-poloniex.herokuapp.com>Poloniex</a>";
+    exmo = "<a href=https://monitor-volatility-exmo.herokuapp.com>Exmo</a>";
     endTime = Math.ceil((CACHE.date + ms(time_cache + "m") - lodash.now()) / (1000 * 60));
     if (!!yaId) {
       metrika = "<!-- Yandex.Metrika counter --> <script type='text/javascript'> (function (d, w, c) { (w[c] = w[c] || []).push(function() { try { w.yaCounter" + yaId + " = new Ya.Metrika({ id:" + yaId + ", clickmap:true, trackLinks:true, accurateTrackBounce:true, webvisor:true, ut:'noindex' }); } catch(e) { } }); var n = d.getElementsByTagName('script')[0], s = d.createElement('script'), f = function () { n.parentNode.insertBefore(s, n); }; s.type = 'text/javascript'; s.async = true; s.src = 'https://mc.yandex.ru/metrika/watch.js'; if (w.opera == '[object Opera]') { d.addEventListener('DOMContentLoaded', f, false); } else { f(); } })(document, window, 'yandex_metrika_callbacks'); </script> <noscript><div><img src='https://mc.yandex.ru/watch/" + yaId + "?ut=noindex' style='position:absolute; left:-9999px;' alt='' /></div></noscript> <!-- /Yandex.Metrika counter -->";
@@ -196,7 +197,7 @@
       metrika = '';
     }
     html = [
-      "<html><head><title>Анализ волатильности торговых пар биржи Bittrex</title><script type='text/javascript' src='/public/jquery.min.js'></script><script type='text/javascript' src='/public/jquery.tablesorter.js'></script><script type='text/javascript' src='/public/jquery.filtertable.min.js'></script><link rel='stylesheet' href='/public/style.css' type='text/css'><script type='text/javascript'>$(document).ready(function() {$('table').tablesorter();$('table').filterTable({label: 'Фильтр: ',placeholder: ''});});</script>" + metrika + "</head><body>", "<h2>Анализ волатильности торговых пар биржи " + bittrex + " (" + btcE + " | " + poloniex + ")</h2>", "<h3>Период: 24 ч. &nbsp;&nbsp; Время: " + new Date(CACHE.date).toLocaleTimeString('en-US', {
+      "<html><head><title>Анализ волатильности торговых пар биржи Bittrex</title><script type='text/javascript' src='/public/jquery.min.js'></script><script type='text/javascript' src='/public/jquery.tablesorter.js'></script><script type='text/javascript' src='/public/jquery.filtertable.min.js'></script><link rel='stylesheet' href='/public/style.css' type='text/css'><script type='text/javascript'>$(document).ready(function() {$('table').tablesorter();$('table').filterTable({label: 'Фильтр: ',placeholder: ''});});</script>" + metrika + "</head><body>", "<h2>Анализ волатильности торговых пар биржи " + bittrex + " (" + btcE + " | " + poloniex + " | " + exmo + ")</h2>", "<h3>Период: 24 ч. &nbsp;&nbsp; Время: " + new Date(CACHE.date).toLocaleTimeString('en-US', {
         timeZone: 'Europe/Moscow',
         hour12: false
       }) + " &nbsp;&nbsp;&nbsp; Обновление кэша через: " + endTime + " мин. </h3>", "<table class='tablesorter'><thead><tr><th>Пара</th><th>диапазон хода %</th><th>уровень lastPrice % в<br>диапазоне хода</th><th>change %</th><th>Ask</th><th>Bid</th><th>Стенка на Ask</th><th>Стенка на Bid</th><th>Volume</th><th>Volume Fork</th></tr></thead><tbody>"

@@ -129,6 +129,7 @@ html-data = (data, cbk) ->
   bittrex = "<a href=https://monitor-volatility-bittrex.herokuapp.com>Bittrex</a>"
   btc-e = "<a href=https://monitor-volatility-btc-e.herokuapp.com>Btc-e</a>"
   poloniex = "<a href=https://monitor-volatility-poloniex.herokuapp.com>Poloniex</a>"
+  exmo = "<a href=https://monitor-volatility-exmo.herokuapp.com>Exmo</a>"
 
   end-time = Math.ceil((CACHE.date + ms("#{time_cache}m") - lodash.now!) / (1000 * 60))
 
@@ -155,7 +156,7 @@ html-data = (data, cbk) ->
     </script>
     #{metrika}
     </head><body>"
-    "<h2>Анализ волатильности торговых пар биржи #{bittrex} (#{btc-e} | #{poloniex})</h2>"
+    "<h2>Анализ волатильности торговых пар биржи #{bittrex} (#{btc-e} | #{poloniex} | #{exmo})</h2>"
     "<h3>Период: 24 ч. &nbsp;&nbsp; Время: #{new Date(CACHE.date).toLocaleTimeString('en-US', { timeZone: 'Europe/Moscow', hour12: false })} &nbsp;&nbsp;&nbsp; Обновление кэша через: #{end-time} мин. </h3>"
     "<table class='tablesorter'><thead><tr>
     <th>Пара</th>
