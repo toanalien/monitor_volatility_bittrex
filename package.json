@@ -1,6 +1,6 @@
 {
   "name": "monitor_volatility_bittrex",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "author": {
     "name": "George",
     "email": "steeply2010@gmail.com"
@@ -24,14 +24,15 @@
   ],
   "license": "MIT",
   "engines": {
-    "node": ">=8.2.1",
-    "npm": ">=5.3.0"
+    "node": ">=8.4.0",
+    "npm": ">=5.4.0"
   },
   "private": true,
   "dependencies": {
     "async": "^2.5.0",
     "compression": "^1.7.0",
     "express": "^4.15.4",
+    "express-robots": "^0.1.6",
     "lodash": "^4.17.4",
     "ms": "^2.0.0",
     "request": "^2.81.0",

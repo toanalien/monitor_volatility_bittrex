@@ -7,10 +7,12 @@ require! {
   \compression
   \ms
   \serve-favicon :favicon
+  \express-robots
 }
 
 app = express!
 app.use(compression!)
+app.use(express-robots({UserAgent: '*', Disallow: '/'}))
 app.use(favicon(path.join(__dirname, 'favicon.png')))
 app.use('/public', express.static('public'))
 
@@ -18,6 +20,8 @@ server_port = process.env.PORT || 3000
 time_cache = process.env.TIME_CACHE || 10   # в минутах
 limit-order-book = process.env.LIMIT_ORDER_BOOK || 100  # глубина стакана
 ya-id = process.env.YA_ID
+exchange-main = process.env.EXCHANGE_MAIN || \bittrex
+exchange-list = (process.env.EXCHANGE_LIST || 'bitfinex, bittrex, btc-e, poloniex, exmo').replace(/\s+/g, '').split(',')
 
 CACHE = date: 0, data: []
 WALL_DATA   = {}
@@ -39,7 +43,7 @@ text-error = (err) ->
 
 difference-between-numbers = (a, b) -> (b - a) / a * 100
 percentage-between-numbers = (a, b) -> +(100 * (a - b) / b).toFixed 1
-flat_func                  = (x, y, z) -> (z - x) / (y - x) * 100
+flat_func                  = (x, y, z) -> ((z - x) / (y - x) * 100) >? 0
 
 order-book = (list_pair, cbk) ->
   with []
@@ -116,7 +120,7 @@ load-data-pair = (list_pair, cbk) ->
 
 reg = (method, cbk) ->
   err, resp, body <- request do
-    timeout: 20000
+    timeout: ms('20s')
     url: "https://bittrex.com/api/v1.1/public/#{method}"
   return cbk err if err?
   cbk null, body
@@ -125,11 +129,12 @@ html-data = (data, cbk) ->
   css = do
     green: "color: green"
     red: "color: red"
+    black: "color: black"
 
-  bittrex = "<a href=https://monitor-volatility-bittrex.herokuapp.com>Bittrex</a>"
-  btc-e = "<a href=https://monitor-volatility-btc-e.herokuapp.com>Btc-e</a>"
-  poloniex = "<a href=https://monitor-volatility-poloniex.herokuapp.com>Poloniex</a>"
-  exmo = "<a href=https://monitor-volatility-exmo.herokuapp.com>Exmo</a>"
+  exch = {}
+  exchange = []
+  lodash.forEach exchange-list, (v) !-> exch[v] = "<a href='https://monitor-volatility-#{v}.herokuapp.com' rel='nofollow'>#{lodash.upperFirst(v)}</a>"
+  lodash.forIn exch, (v, k) !-> exchange.push v if k isnt exchange-main
 
   end-time = Math.ceil((CACHE.date + ms("#{time_cache}m") - lodash.now!) / (1000 * 60))
 
@@ -140,7 +145,7 @@ html-data = (data, cbk) ->
 
   html = [
     "<html><head>
-    <title>Анализ волатильности торговых пар биржи Bittrex</title>
+    <title>Анализ волатильности торговых пар биржи #{lodash.upperFirst(exchange-main)}</title>
     <script type='text/javascript' src='/public/jquery.min.js'></script>
     <script type='text/javascript' src='/public/jquery.tablesorter.js'></script>
     <script type='text/javascript' src='/public/jquery.filtertable.min.js'></script>
@@ -156,7 +161,7 @@ html-data = (data, cbk) ->
     </script>
     #{metrika}
     </head><body>"
-    "<h2>Анализ волатильности торговых пар биржи #{bittrex} (#{btc-e} | #{poloniex} | #{exmo})</h2>"
+    "<h2>Анализ волатильности торговых пар биржи #{exch[exchange-main]} (#{exchange.join(' | ')})</h2>"
     "<h3>Период: 24 ч. &nbsp;&nbsp; Время: #{new Date(CACHE.date).toLocaleTimeString('en-US', { timeZone: 'Europe/Moscow', hour12: false })} &nbsp;&nbsp;&nbsp; Обновление кэша через: #{end-time} мин. </h3>"
     "<table class='tablesorter'><thead><tr>
     <th>Пара</th>
@@ -172,7 +177,11 @@ html-data = (data, cbk) ->
     </tr></thead><tbody>"
   ]
   data.forEach (v) !->
-    color = if v[8] > 0 then css.green else css.red
+    color = if v[8] > 0
+      then css.green
+      else
+        if v[8] is 0 then css.black else css.red
+
     if !lodash.isNaN +v[1]
       html.push "<tr>
         <td>#{v[0].replace('-', '/')}</td>
